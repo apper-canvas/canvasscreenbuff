@@ -19,6 +19,19 @@
   h1 {
     @apply text-3xl md:text-4xl lg:text-5xl;
   }
+
+  .friends-theme h1 {
+    @apply font-friends;
+  }
+
+  .modernfamily-theme h1 {
+    @apply font-modernfamily;
+  }
+
+  .harrypotter-theme h1 {
+    @apply font-wizarding;
+    @apply text-3xl md:text-4xl lg:text-5xl;
+  }
   
   h2 {
     @apply text-2xl md:text-3xl lg:text-4xl;
@@ -53,6 +66,41 @@
   
   .neu-card {
     @apply rounded-xl p-6 bg-surface-100 dark:bg-surface-800 shadow-neu-light dark:shadow-neu-dark;
+  }
+
+  /* Theme specific card variants */
+  .friends-theme .neu-card {
+    @apply bg-friends-light border-2 border-friends dark:bg-surface-800 dark:border-friends;
+  }
+
+  .modernfamily-theme .neu-card {
+    @apply bg-modernfamily-light border-2 border-modernfamily dark:bg-surface-800 dark:border-modernfamily;
+  }
+
+  .harrypotter-theme .neu-card {
+    @apply bg-harrypotter-secondary/20 border-2 border-harrypotter dark:bg-surface-800/90 dark:border-harrypotter;
+  }
+
+  /* Theme-specific styled buttons */
+  .friends-btn {
+    @apply bg-friends text-black hover:bg-friends-dark transition-colors duration-300;
+  }
+
+  .modernfamily-btn {
+    @apply bg-modernfamily text-white hover:bg-modernfamily-dark transition-colors duration-300;
+  }
+
+  .harrypotter-btn {
+    @apply bg-harrypotter text-white hover:bg-harrypotter-gryffindor transition-colors duration-300;
+  }
+
+  /* Theme backgrounds */
+  .friends-background {
+    @apply bg-friends-pattern bg-cover bg-center bg-opacity-10;
+  }
+  
+  .modernfamily-background {
+    @apply bg-modernfamily-pattern bg-cover bg-center;
   }
 }
 
@@ -95,6 +143,93 @@
     50% {
       opacity: 0.7;
     }
+  }
+
+  /* Themed animations */
+  /* Friends coffee cup animation */
+  @keyframes steam {
+    0% {
+      opacity: 0.3;
+      transform: translateY(0) scale(1);
+    }
+    50% {
+      opacity: 0.5;
+      transform: translateY(-10px) scale(1.2);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-20px) scale(0.8);
+    }
+  }
+
+  /* Modern Family camera animations */
+  @keyframes flash {
+    0%, 100% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes familyBounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+
+  /* Harry Potter magic animations */
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-15px);
+    }
+  }
+
+  @keyframes sparkle {
+    0%, 100% {
+      opacity: 0.2;
+      transform: scale(0.8);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.2);
+    }
+  }
+
+  @keyframes shiftPosition {
+    0%, 100% {
+      transform: translateX(0) translateY(0);
+    }
+    25% {
+      transform: translateX(5px) translateY(-5px);
+    }
+    50% {
+      transform: translateX(10px) translateY(0);
+    }
+    75% {
+      transform: translateX(5px) translateY(5px);
+    }
+  }
+
+  @keyframes wobble {
+    0%, 100% {
+      transform: rotate(-1deg);
+    }
+    50% {
+      transform: rotate(1deg);
+    }
+  }
+
+  /* Add a subtle glow effect for magical items */
+  .magical-glow {
+    @apply relative;
+    box-shadow: 0 0 10px 2px rgba(124, 58, 237, 0.5);
   }
 }
 

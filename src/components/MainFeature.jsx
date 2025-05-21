@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
+import { Tilt } from 'react-parallax-tilt';
 import { getIcon } from '../utils/iconUtils';
+import { FriendsTheme, ModernFamilyTheme, HarryPotterTheme } from './themes';
 
 // Icons
 const TvIcon = getIcon('tv');
@@ -99,7 +101,7 @@ const quizData = {
   },
   modernfamily: {
     name: "Modern Family",
-    icon: UsersIcon,
+    icon: TvIcon,
     color: "modernfamily",
     questions: [
       {
@@ -394,31 +396,125 @@ const MainFeature = () => {
   // Render category selection screen
   const renderCategorySelection = () => {
     return (
+      <>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="grid gap-6 md:grid-cols-3"
+        className="text-center mb-8"
+      >
+        <h2 className="text-2xl md:text-3xl font-bold mb-4">Choose Your Category</h2>
+        <p className="text-surface-600 dark:text-surface-400 max-w-xl mx-auto">
+          Select your favorite show or movie to start the trivia challenge!
+        </p>
+      </motion.div>
+      
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="grid gap-8 md:grid-cols-3"
       >
         {Object.entries(quizData).map(([key, category]) => {
           const CategoryIcon = category.icon;
+          
+          // Category-specific components
+          let CategoryComponent;
+          let buttonClass = "neu-card flex flex-col items-center p-6 transition-all";
+          let iconClass = `w-12 h-12 mb-4 text-${category.color}`;
+          let backgroundClass = "";
+          let tiltOptions = { max: 10, scale: 1.05, speed: 500 };
+          
+          switch(key) {
+            case 'friends':
+              backgroundClass = "before:absolute before:inset-0 before:bg-friends-pattern before:bg-cover before:bg-center before:opacity-10 before:dark:opacity-5 overflow-hidden";
+              
+              // Additional Friends-specific styling
+              buttonClass += " border-friends hover:border-friends-dark hover:bg-friends-light/50";
+              iconClass += " animate-bounce-short";
+              
+              // Content for Friends
+              CategoryComponent = (
+                <div className="relative z-10">
+                  <motion.div 
+                    whileHover={{ rotate: [0, -5, 5, -5, 0] }} 
+                    transition={{ duration: 0.5 }}
+                  >
+                    <CategoryIcon className={iconClass} />
+                  </motion.div>
+                  <h3 className="text-xl font-bold mb-2 font-friends">{category.name}</h3>
+                  <p className="text-sm text-surface-600 dark:text-surface-400">
+                    Coffee shop trivia!
+                  </p>
+                </div>
+              );
+              break;
+              
+            case 'modernfamily':
+              backgroundClass = "before:absolute before:inset-0 before:bg-modernfamily-pattern before:bg-cover before:bg-center before:opacity-10 before:dark:opacity-5 overflow-hidden";
+              buttonClass += " border-modernfamily hover:border-modernfamily-dark hover:bg-modernfamily-light/50";
+              
+              // Content for Modern Family
+              CategoryComponent = (
+                <div className="relative z-10">
+                  <CategoryIcon className={`${iconClass} animate-family-bounce`} />
+                  <h3 className="text-xl font-bold mb-2 font-modernfamily">{category.name}</h3>
+                  <p className="text-sm text-surface-600 dark:text-surface-400">
+                    Family comedy trivia!
+                  </p>
+                </div>
+              );
+              break;
+              
+            case 'harrypotter':
+              backgroundClass = "before:absolute before:inset-0 before:bg-harrypotter-pattern before:bg-cover before:bg-center before:opacity-10 before:dark:opacity-5 overflow-hidden";
+              buttonClass += " border-harrypotter hover:border-harrypotter-gryffindor hover:bg-harrypotter-secondary/20";
+              tiltOptions = { max: 15, scale: 1.05, speed: 1000, glare: true, "max-glare": 0.3 };
+              
+              // Content for Harry Potter with floating animation
+              CategoryComponent = (
+                <div className="relative z-10">
+                  <motion.div
+                    animate={{ y: [0, -10, 0] }}
+                    transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+                  >
+                    <CategoryIcon className={`${iconClass} magical-glow`} />
+                  </motion.div>
+                  <h3 className="text-xl font-bold mb-2 font-wizarding">{category.name}</h3>
+                  <p className="text-sm text-surface-600 dark:text-surface-400">
+                    Wizarding world trivia!
+                  </p>
+                </div>
+              );
+              break;
+              
+            default:
+              CategoryComponent = (
+                <>
+                  <CategoryIcon className={iconClass} />
+                  <h3 className="text-xl font-bold mb-2">{category.name}</h3>
+                  <p className="text-sm text-surface-600 dark:text-surface-400">
+                    {category.questions.length} trivia questions
+                  </p>
+                </>
+              );
+          }
+          
           return (
-            <motion.button
-              key={key}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => startQuiz(key)}
-              className={`neu-card flex flex-col items-center p-6 hover:shadow-card border-2 border-transparent hover:border-${category.color} transition-all`}
-            >
-              <CategoryIcon className={`w-12 h-12 mb-4 text-${category.color}`} />
-              <h3 className="text-xl font-bold mb-2">{category.name}</h3>
-              <p className="text-sm text-surface-600 dark:text-surface-400">
-                {category.questions.length} trivia questions
-              </p>
-            </motion.button>
+            <Tilt key={key} {...tiltOptions}>
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => startQuiz(key)}
+                className={`relative ${buttonClass} ${backgroundClass}`}
+              >
+                {CategoryComponent}
+              </motion.button>
+            </Tilt>
           );
         })}
       </motion.div>
+      </>
     );
   };
   
@@ -429,11 +525,33 @@ const MainFeature = () => {
     const currentQuestion = questions[currentQuestionIndex];
     const categoryData = quizData[selectedCategory];
     
+    // Determine which theme wrapper to use based on the selected category
+    let ThemeWrapper;
+    let buttonClass = "btn-primary";
+    
+    switch(selectedCategory) {
+      case 'friends':
+        ThemeWrapper = FriendsTheme;
+        buttonClass = "friends-btn";
+        break;
+      case 'modernfamily':
+        ThemeWrapper = ModernFamilyTheme;
+        buttonClass = "modernfamily-btn";
+        break;
+      case 'harrypotter':
+        ThemeWrapper = HarryPotterTheme;
+        buttonClass = "harrypotter-btn";
+        break;
+      default:
+        ThemeWrapper = ({ children }) => <>{children}</>;
+    }
+    
     return (
-      <motion.div
-        key={currentQuestionIndex}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+      <ThemeWrapper isActive={true}>
+        <motion.div
+          key={currentQuestionIndex}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
         className="max-w-3xl mx-auto"
       >
@@ -441,7 +559,12 @@ const MainFeature = () => {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center">
             {categoryData.icon && <categoryData.icon className={`w-6 h-6 mr-2 text-${categoryData.color}`} />}
-            <h3 className={`font-bold text-${categoryData.color}`}>{categoryData.name}</h3>
+            <h3 className={`font-bold text-${categoryData.color} ${
+              selectedCategory === 'friends' ? 'font-friends' : 
+              selectedCategory === 'modernfamily' ? 'font-modernfamily' : 
+              selectedCategory === 'harrypotter' ? 'font-wizarding' : ''
+            }`}>
+              {categoryData.name}</h3>
           </div>
           
           <div className="flex items-center gap-4">
@@ -466,12 +589,20 @@ const MainFeature = () => {
             transition={{ duration: 0.5 }}
             className={`h-full bg-${categoryData.color}`}
           />
-        </div>
-        
+        <div className={`card mb-6 ${
+          selectedCategory === 'friends' ? 'border-2 border-friends' : 
+          selectedCategory === 'modernfamily' ? 'border-2 border-modernfamily' : 
+          selectedCategory === 'harrypotter' ? 'border-2 border-harrypotter bg-harrypotter/5' : ''
+        }`}>
+          <h3 className={`text-xl md:text-2xl font-bold mb-2 ${
+            selectedCategory === 'friends' ? 'font-friends' : 
+            selectedCategory === 'modernfamily' ? 'font-modernfamily' : 
+            selectedCategory === 'harrypotter' ? 'font-wizarding' : ''
+          }`}>
         {/* Question */}
         <div className="card mb-6">
           <h3 className="text-xl md:text-2xl font-bold mb-2">
-            Question {currentQuestionIndex + 1} of {questions.length}
+        </div>
           </h3>
           <p className="text-lg md:text-xl">{currentQuestion.text}</p>
         </div>
@@ -484,7 +615,13 @@ const MainFeature = () => {
             
             if (selectedAnswer === null) {
               // Not answered yet
-              optionClass += " border-surface-300 dark:border-surface-700 hover:border-primary hover:bg-primary-light/10";
+              optionClass += ` border-surface-300 dark:border-surface-700 ${
+                selectedCategory === 'friends' 
+                  ? 'hover:border-friends hover:bg-friends-light/20' 
+                : selectedCategory === 'modernfamily' 
+                  ? 'hover:border-modernfamily hover:bg-modernfamily-light/20' 
+                : selectedCategory === 'harrypotter' 
+                  ? 'hover:border-harrypotter hover:bg-harrypotter-secondary/20' : 'hover:border-primary hover:bg-primary-light/10'}`;
             } else if (index === currentQuestion.correctAnswer) {
               // Correct answer
               optionClass += " border-green-500 bg-green-100 dark:bg-green-900/30";
@@ -505,7 +642,12 @@ const MainFeature = () => {
                 disabled={selectedAnswer !== null}
                 className={optionClass}
               >
-                <div className="w-8 h-8 rounded-full border-2 border-current flex items-center justify-center mr-3 font-bold">
+              <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center mr-3 font-bold ${
+                selectedCategory === 'friends' ? 'border-friends' : 
+                selectedCategory === 'modernfamily' ? 'border-modernfamily' : 
+                selectedCategory === 'harrypotter' ? 'border-harrypotter' : 
+                'border-current'
+              }`}>
                   {String.fromCharCode(65 + index)}
                 </div>
                 <span className="flex-1 text-left">{option}</span>
@@ -522,6 +664,17 @@ const MainFeature = () => {
           })}
         </div>
         
+        {/* Category-specific decorative elements */}
+        {selectedCategory === 'harrypotter' && (
+          <motion.div 
+            className="absolute bottom-10 right-10 opacity-30 dark:opacity-20 z-0 text-harrypotter"
+            animate={{ rotate: [0, 360] }}
+            transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
+          >
+            <WandIcon className="w-16 h-16" />
+          </motion.div>
+        )}
+        
         {/* Feedback animation */}
         <AnimatePresence>
           {isCorrect !== null && (
@@ -532,7 +685,7 @@ const MainFeature = () => {
               transition={{ duration: 0.3 }}
               className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
                 flex items-center justify-center rounded-full w-24 h-24 z-20
-                ${isCorrect ? 'bg-green-500' : 'bg-red-500'}`}
+                ${isCorrect ? 'bg-green-500' : 'bg-red-500'} ${selectedCategory === 'harrypotter' ? 'magical-glow' : ''}`}
             >
               {isCorrect ? (
                 <CheckCircleIcon className="w-16 h-16 text-white" />
@@ -542,7 +695,8 @@ const MainFeature = () => {
             </motion.div>
           )}
         </AnimatePresence>
-      </motion.div>
+        </motion.div>
+      </ThemeWrapper>
     );
   };
   
@@ -551,6 +705,16 @@ const MainFeature = () => {
     const categoryData = quizData[selectedCategory];
     const percentage = (score / questions.length) * 100;
     let message;
+    
+    // Define theme wrapper based on category
+    let ThemeWrapper;
+    switch(selectedCategory) {
+      case 'friends': ThemeWrapper = FriendsTheme; break;
+      case 'modernfamily': ThemeWrapper = ModernFamilyTheme; break;
+      case 'harrypotter': ThemeWrapper = HarryPotterTheme; break;
+      default: ThemeWrapper = ({ children }) => <>{children}</>;
+    }
+    
     
     if (percentage >= 90) {
       message = "Amazing! You're a true fan!";
@@ -563,24 +727,48 @@ const MainFeature = () => {
     }
     
     return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-xl mx-auto text-center"
-      >
-        <div className="card mb-6">
-          <h2 className="text-2xl md:text-3xl font-bold mb-2">Quiz Completed!</h2>
-          <div className={`inline-flex items-center justify-center p-4 my-6 rounded-full bg-${categoryData.color}/20`}>
-            {categoryData.icon && <categoryData.icon className={`w-10 h-10 text-${categoryData.color}`} />}
-          </div>
+      <ThemeWrapper isActive={true}>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-xl mx-auto text-center"
+        >
+          <div className={`card mb-6 ${
+            selectedCategory === 'friends' ? 'border-2 border-friends' : 
+            selectedCategory === 'modernfamily' ? 'border-2 border-modernfamily' : 
+            selectedCategory === 'harrypotter' ? 'border-2 border-harrypotter bg-harrypotter/5' : ''
+          }`}>
+            <h2 className={`text-2xl md:text-3xl font-bold mb-2 ${
+              selectedCategory === 'friends' ? 'font-friends' : 
+              selectedCategory === 'modernfamily' ? 'font-modernfamily' : 
+              selectedCategory === 'harrypotter' ? 'font-wizarding' : ''
+            }`}>
+              Quiz Completed!
+            </h2>
+            
+            <div className={`inline-flex items-center justify-center p-4 my-6 rounded-full bg-${categoryData.color}/20 ${
+              selectedCategory === 'harrypotter' ? 'magical-glow' : ''
+            }`}>
+              {categoryData.icon && <categoryData.icon className={`w-10 h-10 text-${categoryData.color} ${
+                selectedCategory === 'harrypotter' ? 'animate-float' : 
+                selectedCategory === 'friends' ? 'animate-bounce-short' : 
+                selectedCategory === 'modernfamily' ? 'animate-family-bounce' : ''
+              }`} />}
+            </div>
+            
+            <div className={`text-4xl md:text-5xl font-bold mb-2 ${
+              selectedCategory === 'friends' ? 'font-friends text-friends-dark' : 
+              selectedCategory === 'modernfamily' ? 'font-modernfamily text-modernfamily-dark' : 
+              selectedCategory === 'harrypotter' ? 'font-wizarding text-harrypotter' : ''
+            }`}>
+              {score} / {questions.length}
+            </div>
+            <p className="text-lg md:text-xl mb-4">{message}</p>
           
-          <div className="text-4xl md:text-5xl font-bold mb-2">{score} / {questions.length}</div>
-          <p className="text-lg md:text-xl mb-4">{message}</p>
-          
-          {/* Score gauge */}
-          <div className="w-full h-4 bg-surface-200 dark:bg-surface-800 rounded-full mb-2 overflow-hidden">
-            <motion.div
+            {/* Score gauge */}
+            <div className="w-full h-4 bg-surface-200 dark:bg-surface-800 rounded-full mb-2 overflow-hidden">
+              <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${percentage}%` }}
               transition={{ duration: 1, delay: 0.3 }}
@@ -593,7 +781,7 @@ const MainFeature = () => {
           </div>
           <p className="text-lg font-bold mb-6">{percentage.toFixed(0)}%</p>
           
-          {percentage >= 90 && (
+              />
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -610,7 +798,10 @@ const MainFeature = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={replayQuiz}
-            className="btn-primary"
+            className={`${
+              selectedCategory === 'friends' ? 'friends-btn' : 
+              selectedCategory === 'modernfamily' ? 'modernfamily-btn' : 
+              selectedCategory === 'harrypotter' ? 'harrypotter-btn' : 'btn-primary'}`}
           >
             <RefreshCwIcon className="w-5 h-5 mr-2" />
             Play Again
@@ -626,7 +817,8 @@ const MainFeature = () => {
             Change Category
           </motion.button>
         </div>
-      </motion.div>
+        </motion.div>
+      </ThemeWrapper>
     );
   };
   

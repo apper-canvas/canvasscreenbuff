@@ -1,13 +1,16 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { toast } from 'react-toastify';
 import { getIcon } from '../utils/iconUtils';
 import MainFeature from '../components/MainFeature';
 
 const TvIcon = getIcon('tv');
 const InfoIcon = getIcon('info');
+const WandIcon = getIcon('wand');
+const UsersIcon = getIcon('users');
 
 function Home() {
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [menuVisible, setMenuVisible] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   
   const toggleInfo = () => {
@@ -15,12 +18,25 @@ function Home() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 md:py-12 max-w-6xl">
+    <div className={`container mx-auto px-4 py-8 md:py-12 max-w-6xl
+      ${selectedCategory === 'friends' ? 'friends-theme' : 
+        selectedCategory === 'modernfamily' ? 'modernfamily-theme' : 
+        selectedCategory === 'harrypotter' ? 'harrypotter-theme' : ''}`}
+    >
       <header className="text-center mb-8 md:mb-12">
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
+          className={`flex items-center justify-center gap-3 mb-4 ${
+            selectedCategory === 'friends' 
+              ? 'text-friends' 
+            : selectedCategory === 'modernfamily' 
+              ? 'text-modernfamily' 
+            : selectedCategory === 'harrypotter' 
+              ? 'text-harrypotter' 
+            : ''
+          }`}
           className="flex items-center justify-center gap-3 mb-4"
         >
           <TvIcon className="w-8 h-8 md:w-10 md:h-10 text-primary" />
@@ -69,7 +85,7 @@ function Home() {
       </header>
 
       <main>
-        <MainFeature />
+        <MainFeature onCategorySelect={setSelectedCategory} />
       </main>
       
       <footer className="mt-12 pt-6 border-t border-surface-200 dark:border-surface-800 text-center text-surface-500">
